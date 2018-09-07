@@ -91,7 +91,7 @@ objects:
       template:
         spec:
           containers:
-              image: ""
+            - image: ""
               name: osio-angular
               securityContext:
                 privileged: false
