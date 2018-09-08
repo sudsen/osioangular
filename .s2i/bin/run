@@ -1,1 +1,4 @@
+echo "##########---> Check what is there in the folder"
+ls
+echo "##########---> Starting the application \n"
 npm run start
