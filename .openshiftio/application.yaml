@@ -51,7 +51,7 @@ objects:
               value: "true"
           from:
             kind: DockerImage
-            name: 'bucharestgold/centos7-s2i-nodejs:10.x'
+            name: 'sudsen/s2i-nginx-ng-centos7:0.0.1'
           incremental: true
       output:
         to:
