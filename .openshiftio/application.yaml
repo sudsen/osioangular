@@ -25,14 +25,14 @@ objects:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
     metadata:
-      name: nodejs-health-check${SUFFIX_NAME}
+      name: osio-angular${SUFFIX_NAME}
       labels:
         version: ${RELEASE_VERSION}
     spec: {}
   - apiVersion: v1
     kind: BuildConfig
     metadata:
-      name: nodejs-health-check-s2i${SUFFIX_NAME}
+      name: osio-angular-s2i${SUFFIX_NAME}
       labels:
           version: ${RELEASE_VERSION}
     spec:
@@ -46,6 +46,9 @@ objects:
       strategy:
         type: Source
         sourceStrategy:
+          env:
+            - name: DEV_MODE
+              value: "true"
           from:
             kind: DockerImage
             name: 'bucharestgold/centos7-s2i-nodejs:10.x'
@@ -53,7 +56,7 @@ objects:
       output:
         to:
           kind: ImageStreamTag
-          name: 'nodejs-health-check${SUFFIX_NAME}:${RELEASE_VERSION}'
+          name: 'osio-angular${SUFFIX_NAME}:${RELEASE_VERSION}'
       triggers: []
     status:
       lastVersion: 0
@@ -66,50 +69,30 @@ objects:
           targetPort: 8080
       type: ClusterIP
       selector:
-        project: nodejs-health-check
+        project: osio-angular
         provider: nodeshift
     metadata:
-      name: nodejs-health-check${SUFFIX_NAME}
+      name: osio-angular${SUFFIX_NAME}
       labels:
         provider: nodeshift
         expose: 'true'
-        project: nodejs-health-check
+        project: osio-angular
         version: ${RELEASE_VERSION}
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
-      name: nodejs-health-check${SUFFIX_NAME}
+      name: osio-angular${SUFFIX_NAME}
       labels:
-        app: nodejs-health-check
+        app: osio-angular
         provider: nodeshift
-        project: nodejs-health-check
+        project: osio-angular
         version: ${RELEASE_VERSION}
     spec:
       template:
         spec:
           containers:
-            - readinessProbe:
-                httpGet:
-                  path: /api/health/readiness
-                  port: 8080
-                  scheme: HTTP
-                failureThreshold: 3
-                initialDelaySeconds: 10
-                periodSeconds: 5
-                successThreshold: 1
-                timeoutSeconds: 1
-              livenessProbe:
-                httpGet:
-                  path: /api/health/liveness
-                  port: 8080
-                  scheme: HTTP
-                failureThreshold: 2
-                initialDelaySeconds: 60
-                periodSeconds: 3
-                successThreshold: 1
-                timeoutSeconds: 1
-              image: ""
-              name: nodejs-health-check
+            - image: ""
+              name: osio-angular
               securityContext:
                 privileged: false
               ports:
@@ -118,15 +101,15 @@ objects:
                   protocol: TCP
         metadata:
           labels:
-            app: nodejs-health-check
-            project: nodejs-health-check
+            app: osio-angular
+            project: osio-angular
             provider: nodeshift
             version: ${RELEASE_VERSION}
       replicas: 1
       revisionHistoryLimit: 2
       selector:
-        app: nodejs-health-check
-        project: nodejs-health-check
+        app: osio-angular
+        project: osio-angular
         provider: nodeshift
       triggers:
         - type: ConfigChange
@@ -134,21 +117,21 @@ objects:
           imageChangeParams:
             automatic: true
             containerNames:
-              - nodejs-health-check
+              - osio-angular
             from:
               kind: ImageStreamTag
-              name: "nodejs-health-check${SUFFIX_NAME}:${RELEASE_VERSION}"
+              name: "osio-angular${SUFFIX_NAME}:${RELEASE_VERSION}"
   - apiVersion: v1
     kind: Route
     metadata:
       labels:
-        project: nodejs-health-check
+        project: osio-angular
         provider: nodeshift
         version: ${RELEASE_VERSION}
-      name: nodejs-health-check${SUFFIX_NAME}
+      name: osio-angular${SUFFIX_NAME}
     spec:
       port:
         targetPort: 8080
       to:
         kind: Service
-        name: nodejs-health-check${SUFFIX_NAME}
+        name: osio-angular${SUFFIX_NAME}
